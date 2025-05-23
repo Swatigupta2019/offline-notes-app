@@ -1,46 +1,102 @@
-# Getting Started with Create React App
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+# Offline Notes App
 
-## Available Scripts
+This is an offline-first notes application built with React and TypeScript. It allows users to create, edit, delete, and search through notes even without internet connectivity. Notes are stored in the browser using IndexedDB and are automatically synced to a mock backend when the device is back online.
 
-In the project directory, you can run:
+---
 
-### `npm start`
+## Setup Instructions
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+1. Clone the repository:
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+   ```bash
+   git clone https://github.com/Swatigupta2019/offline-notes-app.git
+   cd offline-notes-app
+   ```
 
-### `npm test`
+2. Install project dependencies:
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+   ```bash
+   npm install
+   ```
 
-### `npm run build`
+3. Start the mock backend using json-server:
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+   ```bash
+   npm install -g json-server
+   json-server --watch db.json --port 3001
+   ```
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+4. Start the app:
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+   ```bash
+   npm start
+   ```
 
-### `npm run eject`
+---
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+## Features
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+- Create, edit, and delete notes
+- Works fully offline using IndexedDB
+- Syncs automatically when internet is back
+- Debounced autosave while editing
+- Sync status indicator (Synced / Unsynced)
+- Search notes by title or content
+- Notes sorted by last modified date
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+---
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+## Design Decisions
 
-## Learn More
+- Used idb for a clean abstraction over IndexedDB
+- Notes have UUIDs to avoid collisions and support syncing
+- Manual sync logic allows better handling of retries and errors
+- UI is built with Tailwind CSS for faster styling
+- json-server is used for simulating backend REST endpoints
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+---
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+## Assumptions and Limitations
+
+- Conflict resolution is "last write wins"
+- Only single-user functionality (no login/auth)
+- Markdown is saved as plain text, no advanced rendering
+- Notes deleted offline will only be removed from the server once back online
+- Not a full PWA (no service worker)
+
+---
+
+## How to Test
+
+- Open Chrome DevTools and go to the "Network" tab
+- Set the network to "Offline"
+- Create or edit some notes
+- Re-enable the network; notes will automatically sync
+- Visit http://localhost:3001/notes to confirm they were saved to the mock API
+
+---
+
+## Project Structure
+
+```
+offline-notes-app/
+├── public/
+│   └── index.html
+├── src/
+│   ├── db/               # IndexedDB setup
+│   ├── hooks/            # Custom React hooks (e.g., autosave, connectivity)
+│   ├── pages/            # NotesPage UI
+│   ├── services/         # REST API logic
+│   ├── types/            # TypeScript models
+│   ├── index.tsx         # Main entry point
+│   └── index.css         # Tailwind CSS configuration
+├── db.json               # Mock backend data
+└── README.md
+```
+
+---
+
+## Optional Deployment
+
+The app can be deployed using platforms like Vercel or Netlify. Note that the mock backend (json-server) must be separately hosted or replaced with a real backend for full sync functionality in production.
